@@ -1,0 +1,88 @@
+//Approximation of Sphere
+#include<windows.h>
+#include<GL/glut.h>
+#include<math.h>
+void mydisplay()
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+	double c = 3.14 / 180.0, theta, thetar, phi, phir, c80, x, y, z, phir20;
+	for (phi = -80.0; phi <= 80.0; phi += 20.0)
+	{
+		phir = c*phi;
+		phir20 = c*(phi + 20);
+		glBegin(GL_QUAD_STRIP);
+		for (theta = -180.0; theta <= 180.0; theta += 20.0)
+		{
+			thetar = c*theta;
+			x = sin(thetar)*cos(phir);
+			y = cos(thetar)*cos(phir);
+			z = sin(phir);
+			//glColor3f(0.0,1.0,0.0);
+			glVertex3d(x, y, z);
+			x = sin(thetar)*cos(phir20);
+			y = cos(thetar)*cos(phir20);
+			z = sin(phir20);
+			//glColor3f(0.0,0.0,1.0);
+			glVertex3d(x, y, z);
+		}
+		glEnd();
+	}
+	glFlush();
+	glBegin(GL_TRIANGLE_FAN);
+	//glColor3f(1.0,1.0,0.0);
+	glVertex3d(0.0, 0.0, 1.0);
+	c80 = c*80.0;
+	z = sin(c80);
+	for (theta = -180.0; theta <= 180.0; theta += 20.0)
+	{
+		thetar = c*theta;
+		x = sin(thetar)*cos(c80);
+		y = cos(thetar)*cos(c80);
+		//glColor3f(0.0,1.0,1.0);
+		glVertex3d(x, y, z);
+	}
+	glEnd();
+	glFlush();
+	glBegin(GL_TRIANGLE_FAN);
+	//glColor3f(1.0,0.0,1.0);
+	glVertex3d(0.0, 0.0, -1.0);
+	z = -sin(c80);
+	for (theta = -180.0; theta <= 180.0; theta += 20.0)
+	{
+		thetar = c*theta;
+		x = sin(thetar)*cos(c80);
+		y = cos(thetar)*cos(c80);
+		//glColor3f(1.0,1.0,1.0);
+		glVertex3d(x, y, z);
+	}
+	glEnd();
+	glFlush();
+
+}
+
+void init()
+{
+	glClearColor(0.0, 0.0, 0.0, 1);
+	glColor3f(1.0, 0.0, 0.0);
+	//glEnable(GL_DEPTH_TEST);
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(-1.0, 1.0, -1.0, 1.0, -1.0, 1.0);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glRotatef(45.0, 1.0, 0.0, 0.0);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//glShadeModel(GL_FLAT);
+}
+
+int main(int argc, char** argv)
+{
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+	glutInitWindowSize(500, 500);
+	glutInitWindowPosition(20, 20);
+	glutCreateWindow("Sphere");
+	glutDisplayFunc(mydisplay);
+	init();
+	glutMainLoop();
+}
