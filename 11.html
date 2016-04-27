@@ -1,0 +1,77 @@
+#include<windows.h>       // for MS Windows
+#include<gl\glut.h>       // GLUT, include glu.h and gl.h
+//Note: GLglut.h path depending on the system in use
+
+int color = 0;
+GLint width = 800;
+GLint hight = 600;
+
+void init()
+{
+// Set display window color to as glClearColor(R,G,B,Alpha)
+glClearColor(0, 1, 1, 0);
+// Set projection parameters.
+glMatrixMode(GL_PROJECTION);
+// Set 2D Transformation as gluOrtho2D(Min Width, Max Width, Min Height, Max Height)
+gluOrtho2D(0, width, 0, hight);
+}
+
+void drawSquare(GLint x1, GLint y1, GLint x2, GLint y2, GLint x3, GLint y3, GLint x4, GLint y4)
+{
+// if color is 0 then draw white box and change value of color = 1
+if (color == 0)
+{
+glColor3f(1, 1, 1); // white color value is 1 1 1
+color = 1;
+}
+// if color is 1 then draw black box and change value of color = 0
+else
+{
+glColor3f(0, 0, 0); // black color value is 0 0 0
+color = 0;
+}
+
+// Draw Square
+glBegin(GL_POLYGON);
+glVertex2i(x1, y1);
+glVertex2i(x2, y2);
+glVertex2i(x3, y3);
+glVertex2i(x4, y4);
+glEnd();
+}
+void chessboard()
+{
+glClear(GL_COLOR_BUFFER_BIT); // Clear display window
+GLint x, y;
+GLint squareWidthInPixel = 100;
+GLint squareHightInPixel = 75;
+for (x = 0; x <= width; x += squareWidthInPixel)
+{
+for (y = 0; y <= hight; y += squareHightInPixel)
+{
+drawSquare(x, y + squareHightInPixel, x + squareWidthInPixel, y + squareHightInPixel, x + squareWidthInPixel, y, x, y);
+}
+}
+// Process all OpenGL routine s as quickly as possible
+glFlush();
+}
+
+int main(int agrc, char ** argv)
+{
+// Initialize GLUT
+glutInit(&agrc, argv);
+// Set display mode
+glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+// Set top - left display window position.
+glutInitWindowPosition(100, 100);
+// Set display window width and height
+glutInitWindowSize(800, 600);
+// Create display window with the given title
+glutCreateWindow("Chess Board using OpenGL in C++");
+// Execute initialization procedure
+init();
+// Send graphics to display window
+glutDisplayFunc(chessboard);
+// Display everything and wait.
+glutMainLoop();
+}
