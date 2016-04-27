@@ -1,0 +1,118 @@
+#include <stdlib.h>
+#include <stdio.h>
+
+
+#include <GL/glut.h>
+
+void init()
+{
+	glClearColor(0.0, 0.0, 0.0, 0.0);
+}
+void myDrawLine(int x1, int y1, int x2, int y2) { // Bresenham's algorithm
+	int		xTemp, yTemp;
+	int		m;				// slope of line
+	float	x, y;					// float versions of x and y
+	float	e;					// error between line and pixel row
+	float	sign;					// shows if line goes up or down, mod(m) < 1
+	float	step;					// line goes up / down mod(m) > 1
+
+	if (x2 < x1) {				// Swap p1 and p2, draw other direction
+		xTemp = x1; yTemp = y1;
+		x1 = x2;  y1 = y2;
+		x2 = xTemp;   y2 = yTemp;
+	}
+
+	x = x1; y = y1; e = 0.0f;
+	if (x1 == x2  &&  y1 > y2) {
+		m = -63000;			// stop division b 0
+	}
+	else if (x1 == x2  &&  y1 <= y2) {
+		m = 63000;
+	}
+	else m = (y2 - y1) / (x2 - x1);
+	glVertex2f(x, y);			// plot this point
+	if (abs(m) < 1.0f) {
+		if (m > 0) {			// Step on x
+			sign = 1.0f;		// 1, y increases
+		}
+		else {
+			sign = -1.0f;		// 8, y decreases
+		}
+		while (x < x2) {
+			x = x + 1;
+			e = e + m;
+			if (abs((int)e) > 0.5) {
+				y = y + sign;
+				e = e - sign;
+			}			//  Non-Integer
+			glVertex2f(x, y);	// plot this point
+		}				//  First Octant
+	}
+	else {
+		if (m > 0.0f) {
+			step = +1;
+		}
+		else {
+			step = -1;
+		}
+		while ((y - y2) * step < 0) {
+			y = y + step;		// + or -
+			e = e + 1.0f / m;
+			if (abs((int)e) > 0.5) {
+				x = x + 1;
+				e = e - step;
+			}
+			glVertex2f(x, y);	// plot this point
+		}
+	}
+}
+
+
+
+
+void display()
+{
+	glClear(GL_COLOR_BUFFER_BIT);		// clear the drawing area
+	glColor3f(1.0, 1.0, 1.0);		// draw white lines
+	glPointSize(1);			// set one point to 1 pixel size
+	glBegin(GL_POINTS);			// start drawing points
+	myDrawLine(100, 1000, 200, 0);	// draw the line
+	glEnd();				// end drawing points
+	glFlush();
+}
+
+/*  processHits prints out the contents of the
+*  selection array
+*/
+
+
+void reshape(int w, int h)
+{
+	glViewport(0, 0, (GLsizei)w, (GLsizei)h); // set viewport to fill window
+	glMatrixMode(GL_PROJECTION);			// Select The Projection Matrix
+	glLoadIdentity();
+	gluOrtho2D(0.0, (GLdouble)w, 0.0, (GLdouble)h);
+	// use orthographics projection
+	glClearColor(0.0, 0.0, 0.0, 0.0);			// colour to clear viewport to
+	glClear(GL_COLOR_BUFFER_BIT);				// clear viewport RGB bits
+	glMatrixMode(GL_MODELVIEW);				// Select model Matrix
+	glLoadIdentity();
+
+}
+
+
+
+/* main loop */ int main(int argc, char** argv)
+{
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+	glutInitWindowSize(500, 500);
+	glutInitWindowPosition(100, 100);
+	glutCreateWindow(argv[0]);
+	init();
+	glutReshapeFunc(reshape);
+	glutDisplayFunc(display);
+
+	glutMainLoop();
+	return 0;
+}
